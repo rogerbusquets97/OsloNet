@@ -1,4 +1,6 @@
 #include "Server.h"
+#include <chrono>
+#include <thread>
 
 namespace Oslo
 {
@@ -51,16 +53,10 @@ namespace Oslo
 			if (!m_running)
 				return;
 
-			UINT sleep_granularity_ms = 1;
-			bool sleep_granularity_was_set = timeBeginPeriod(sleep_granularity_ms) == TIMERR_NOERROR;
-			LARGE_INTEGER clock_frequency;
-			QueryPerformanceCounter(&clock_frequency);
+			std::chrono::time_point<std::chrono::system_clock> t = std::chrono::system_clock::now();
 
 			while (m_running)
 			{
-				LARGE_INTEGER tick_start_time;
-				QueryPerformanceCounter(&tick_start_time);
-
 				while (true)
 				{
 					int flags = 0;
@@ -93,20 +89,8 @@ namespace Oslo
 
 				UpdateClients();
 
-				/*LONGLONG time_taken_s = utils::time_since(tick_start_time, clock_frequency);
-				while (time_taken_s < SECONDS_PER_TICK)
-				{
-					if (sleep_granularity_was_set)
-					{
-						DWORD time_to_wait_ms = DWORD((SECONDS_PER_TICK - time_taken_s) * 1000);
-						if (time_to_wait_ms > 0)
-						{
-							Sleep(time_to_wait_ms);
-						}
-					}
-
-					time_taken_s = utils::time_since(tick_start_time, clock_frequency);
-				}*/
+				t+= std::chrono::milliseconds(33);
+				std::this_thread::sleep_until(t);
 			}
 		}
 	}
