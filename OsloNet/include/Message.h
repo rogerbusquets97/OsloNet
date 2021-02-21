@@ -18,7 +18,6 @@ namespace Oslo
 				body.Write<T>(data);
 			}
 
-			// NOTE: Must be read in reverse order it was filled
 			template<typename T>
 			void Read(T& data)
 			{
